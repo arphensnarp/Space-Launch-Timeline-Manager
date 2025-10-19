@@ -1,35 +1,15 @@
-# Build: GNU Make + GCC (C11). Produces an executable named 'sltm'.
-CC      := gcc
-CFLAGS  := -std=c11 -Wall -Wextra -Werror -O2 -pipe
-LDFLAGS :=
+CC = gcc
+CPPFLAGS = -Iinclude
+CFLAGS = -std=c11 -Wall -Wextra -Werror -O2 -pipe
+LDFLAGS =
+OBJ = src/main.o src/list.o src/csv.o src/date.o src/util.o
 
-BIN := sltm
-SRC := $(wildcard src/*.c)
-OBJ := $(SRC:.c=.o)
+all: sltm
 
-.PHONY: all clean run test valgrind
-
-all: $(BIN)
-
-$(BIN): $(OBJ)
+sltm: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
-# Remove objects and the binary
 clean:
-	rm -f $(OBJ) $(BIN)
+	rm -f $(OBJ) sltm
 
-# Run the program (interactive REPL). Pass extra args as:
-#   make run ARGS="..."
-run: $(BIN)
-	./$(BIN) $(ARGS)
-
-valgrind: $(BIN)
-	valgrind --leak-check=yes ./$(BIN)
-
-# (Optional) If you later add shell tests in tests/test*.sh,
-# this will discovery-run them:
-test: $(BIN)
-	@set -e; \
-	for t in $(wildcard tests/test*.sh); do \
-	  echo "==> $$t"; bash "$$t"; \
-	done || { echo "No test scripts found under tests/"; exit 0; }
+.PHONY: all clean
