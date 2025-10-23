@@ -1,20 +1,15 @@
-# Our_Tests.md
-
-Space Launch Timeline Manager — Test Plan (TTY, plain text)
-
-## How to run tests (Ubuntu/WSL)
+## How to run tests (Ubuntu btw)
 
 ```bash
 # from repo root
 make                   # builds ./sltm
-mkdir -p tests/actual  # where we store raw outputs
-mkdir -p tests/expect  # where we store expected outputs (optional, if you want files)
+mkdir -p tests/actual  # store raw outputs
+mkdir -p tests/expect  # store expected outputs
 ```
 
 Normalization helper:
 
 ```bash
-# normalize: remove leading prompts "sltm> "
 normalize() { sed -E 's/^sltm> //'; }
 ```
 
@@ -24,14 +19,14 @@ Use it as: `normalize < tests/actual/t1.out > tests/actual/t1.out.norm`
 
 ## Dataset used
 
-* `data/sample_launches.csv` (12 valid rows)
-* `data/test_invalid.csv` (contains invalid rows to be skipped)
+* `data/sample_launches.csv`
+* `data/test_invalid.csv`
 
 ---
 
-## Test 1 — load + range (basic happy path)
+## Test 1 — load + range
 
-**Goal:** Verify CSV load count and date-range filtering (inclusive).
+**Goal:** Verify CSV load count and date-range filtering.
 
 **Script:**
 
@@ -205,34 +200,5 @@ SLV002,2025-01-20,Ariane 6,Artemis Supply Test,Kourou ELA-4,Delayed
 ```
 
 **Pass criteria:** both the normalized stdout and the exported-file head match exactly.
-
----
-
-## Optional: quick diff checks
-
-```bash
-# Example for Test 1:
-cat > tests/expect/t1.out.norm <<'EOF'
-Loaded 12; ignored 0
-SLV005,2025-03-01,Falcon Heavy,Lunar Probe Pathfinder,KSC LC-39A,Scheduled
-SLV006,2025-03-10,Electron,WeatherSat-3,Mahia LC-1B,Success
-SLV007,2025-03-25,Starship,Deep Space Cargo Test,Boca Chica Orbital Pad,Delayed
-SLV008,2025-04-02,Vega C,Earth Imaging Cluster,Vega Launch Zone,Success
-SLV009,2025-04-12,PSLV,NavIC Expansion,Satish Dhawan FLP,Success
-EOF
-
-diff -u tests/expect/t1.out.norm tests/actual/t1.out.norm && echo "T1 PASS"
-```
-
-Repeat similarly for the other tests.
-
----
-
-## Notes & assumptions
-
-* Tests target the provided simple CSV format (6 fields, unquoted).
-* Outputs are UTF-8 plain text; run in a text console/TTY.
-* Use `Ctrl-C` to abort interactive sessions; scripts end with `exit`.
-* For memory safety, run `valgrind --leak-check=yes ./sltm` manually if desired.
 
 ---
